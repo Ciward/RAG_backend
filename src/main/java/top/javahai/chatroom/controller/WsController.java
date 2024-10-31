@@ -161,37 +161,7 @@ public class WsController {
       simpMessagingTemplate.convertAndSendToUser(message.getFrom(),"/queue/robot",resultMessage);
     }
 
-    /**
-     * 接受前端发来的消息，获得RAG后端的回复并转发回给发送者
-     * @param authentication
-     * @param message
-     * @throws IOException
-     */
-    @MessageMapping("/ws/RAGFileChat")
-    public void handleRAGFileChatMessage(Authentication authentication, Message message) throws IOException {
-      User user = ((User) authentication.getPrincipal());
-      //接收到的消息
-      message.setFrom(user.getUsername());
-      message.setCreateTime(new Date());
-      message.setFromNickname(user.getNickname());
-      message.setFromUserProfile(user.getUserProfile());
-      Question question = new Question();
-      question.setContent(message.getContent());
-      question.setCreateTime(new Date());
-      question.setUserId(user.getId());
-      questionDao.insert(question);
-      
-      try {
-        // 构建请求体, 只有检索的文档
-        JSONObject docJsonObject = GptConfig.RAGFileChat(message.getContent());
-        // 解析JSON
-        ObjectMapper objectMapper = new ObjectMapper();
-        // 处理JSON数据
-    
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-    }
+
     /**
      * 接受前端发来的消息，获得RAG后端的回复并转发回给发送者
      * @param authentication

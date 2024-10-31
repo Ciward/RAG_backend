@@ -21,6 +21,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.net.HttpURLConnection;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+
 /**
  * 百度文心一言接入
  */
@@ -170,7 +178,7 @@ public static String getToken() {
      * @param content 用户输入的问题内容
      * @return 包含检索文档的JSONObject，如果请求失败，则返回null
      */
-    public static JSONObject RAGFileChat(String content) {
+    public static void RAGFileChat(String content, SseEmitter emitter) {
         String requestMethod = "POST";
         String url = "http://127.0.0.1:8777/api/local_doc_qa/local_doc_chat"; // 替换{your_host}为实际主机地址
 
@@ -188,26 +196,42 @@ public static String getToken() {
         requestBody.put("networking", false); // 是否开启联网检索
         requestBody.put("product_source", "saas_qa");
         requestBody.put("rerank", true);
-        requestBody.put("only_need_search_results", true); // 只需要搜索结果
+        requestBody.put("only_need_search_results", false); // 只需要搜索结果
         requestBody.put("hybrid_search", true);
-        requestBody.put("max_token", 70000);
+        requestBody.put("max_token", 7114);
         requestBody.put("api_base", "http://127.0.0.1:9991/v1");
         requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
         requestBody.put("model", "custom-glm4-chat");
-        requestBody.put("api_context_length", 16384);
+        requestBody.put("api_context_length", 72704);
         requestBody.put("chunk_size", 2000);
-        requestBody.put("top_p", 0.99);
+        requestBody.put("top_p", 0.9);
+        requestBody.put("top_k", 61);
         requestBody.put("temperature", 0.7);
 
         String outputStr = JSON.toJSONString(requestBody);
 
         try {
-            JSON json = HttpRequest.httpRequest(url, requestMethod, outputStr, "application/json");
-            JSONObject jsonObject = JSONObject.parseObject(json.toJSONString());
-            return jsonObject;
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod(requestMethod);
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = outputStr.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    // 逐行发送数据
+                    emitter.send(SseEmitter.event().data(responseLine));
+                }
+                emitter.complete();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // 请求失败时返回null
+            emitter.completeWithError(e);
         }
     }
 }

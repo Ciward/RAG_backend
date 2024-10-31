@@ -22,16 +22,22 @@ public class StreamController {
                 // 获取用户信息
                 String username = authentication.getName();
                 // 这里可以根据需要使用用户信息进行日志记录或其他操作
-
                 // 调用GptConfig的RAGFileChat方法
-                JSONObject response = GptConfig.RAGFileChat(content);
-
-                // 模拟流式发送数据
-                if (response != null) {
-                    emitter.send(SseEmitter.event().name("message").data(response.toJSONString()));
-                }
-                emitter.complete();
-            } catch (IOException e) {
+                GptConfig.RAGFileChat(content, emitter);
+            } catch (Exception e) {
+                emitter.completeWithError(e);
+            }
+        }).start();
+        return emitter;
+    }
+    @PostMapping("/RAGFileChatStreamNoauth")
+    public SseEmitter streamRAGFileChatNoauth(@RequestBody String content) {
+        SseEmitter emitter = new SseEmitter();
+        new Thread(() -> {
+            try {
+                // 调用GptConfig的RAGFileChat方法
+                GptConfig.RAGFileChat(content, emitter);
+            } catch (Exception e) {
                 emitter.completeWithError(e);
             }
         }).start();
