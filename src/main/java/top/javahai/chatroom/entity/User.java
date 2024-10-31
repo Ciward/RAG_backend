@@ -8,38 +8,51 @@ import java.util.Collection;
 /**
  * (User)实体类
  */
-public class User  implements UserDetails {
+public class User implements UserDetails {
 
     private Integer id;
     /**
-    * 登录账号
-    */
+     * 登录账号
+     */
     private String username;
     /**
-    * 昵称
-    */
+     * 昵称
+     */
     private String nickname;
     /**
-    * 密码
-    */
+     * 密码
+     */
     private String password;
     /**
-    * 用户头像
-    */
+     * 用户头像
+     */
     private String userProfile;
     /**
-    * 用户状态id
-    */
+     * 用户状态id
+     */
     private Integer userStateId;
     /**
-    * 是否可用
-    */
+     * 是否可用
+     */
     private Boolean isEnabled;
     /**
-    * 是否被锁定
-    */
+     * 是否被锁定
+     */
     private Boolean isLocked;
-
+    /**
+     * 性别
+     */
+    private String gender;
+    /**
+     * 姓名
+     */
+    private String name;
+    /**
+     * 学号
+     */
+    private String studentId;
+    private String nation;
+    private String hometown;
 
     public Integer getId() {
         return id;
@@ -129,6 +142,46 @@ public class User  implements UserDetails {
         isLocked = locked;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getHometown() {
+        return hometown;
+    }
+
+    public void setHometown(String hometown) {
+        this.hometown = hometown;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -140,6 +193,11 @@ public class User  implements UserDetails {
                 ", userStateId=" + userStateId +
                 ", isEnabled=" + isEnabled +
                 ", isLocked=" + isLocked +
+                ", gender='" + gender + '\'' +
+                ", name='" + name + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", nation='" + nation + '\'' +
+                ", hometown='" + hometown + '\'' +
                 '}';
     }
 }

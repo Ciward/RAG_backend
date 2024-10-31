@@ -39,7 +39,9 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -165,8 +167,8 @@ public class WsController {
      * @param message
      * @throws IOException
      */
-    @MessageMapping("/ws/RAGchat")
-    public void handleRAGqueryMessage(Authentication authentication, Message message) throws IOException {
+    @MessageMapping("/ws/RAGFileChat")
+    public void handleRAGFileChatMessage(Authentication authentication, Message message) throws IOException {
       User user = ((User) authentication.getPrincipal());
       //接收到的消息
       message.setFrom(user.getUsername());
@@ -181,19 +183,50 @@ public class WsController {
       
       try {
         // 构建请求体, 只有检索的文档
-        JSONObject docJsonObject = GptConfig.RAGchatDoc(message.getContent());
-        // 进入大模型请求队列
-        int queue_id = GptConfig.RAGchat(question);
+        JSONObject docJsonObject = GptConfig.RAGFileChat(message.getContent());
         // 解析JSON
         ObjectMapper objectMapper = new ObjectMapper();
-        
         // 处理JSON数据
     
       } catch (Exception e) {
           e.printStackTrace();
       }
     }
+    /**
+     * 接受前端发来的消息，获得RAG后端的回复并转发回给发送者
+     * @param authentication
+     * @param message
+     * @throws IOException
+     */
+    @RequestMapping("/ws/RAGChat")
+    public Map<String,Object> handleRAGChatMessage(Authentication authentication, Message message) throws IOException {
+      User user = ((User) authentication.getPrincipal());
+      //接收到的消息
+      message.setFrom(user.getUsername());
+      message.setCreateTime(new Date());
+      message.setFromNickname(user.getNickname());
+      message.setFromUserProfile(user.getUserProfile());
+      Question question = new Question();
+      question.setContent(message.getContent());
+      question.setCreateTime(new Date());
+      question.setUserId(user.getId());
+      questionDao.insert(question);
+      
+      try {
+        // 认证成功,返回可以请求
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",200);
+        map.put("message","success");
+        return map;
+      } catch (Exception e) {
+          e.printStackTrace();
+          Map<String,Object> map = new HashMap<>();
+          map.put("code",500);
+          map.put("message","error");
+          return map;
+      }
 
+    }
 
        /**
      * 接受前端发来的消息，调用python接口并转发回给发送者

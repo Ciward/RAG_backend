@@ -111,41 +111,6 @@ public static String getToken() {
         return result;
     }
 
-    public static JSONObject RAGchatDoc(String content) {
-        // data = {
-        //         "query": "综合评价总分的详细组成？",
-        //         "mode": "local_kb",
-        //         "kb_name": "campus",
-        //         "top_k": 6,
-        //         "score_threshold": 1.0,
-        //         "history": [],
-        //         "stream": true,
-        //         "model": "custom-glm4-chat",
-        //         "temperature": 0.7,
-        //         "max_tokens": 0,
-        //         "prompt_name": "default",
-        //         "return_direct": false
-        //         }
-        String requestMethod = "POST";
-        String url = "http://127.0.0.1:1145/chat/kb_chat";//post请求时格式
-        HashMap<String, Object> requestBody = new HashMap<>();
-        requestBody.put("query", content);
-        requestBody.put("model", "custom-glm4-chat");
-        requestBody.put("mode", "local_kb");
-        requestBody.put("kb_name", "campus");
-        requestBody.put("top_k", 6);
-        requestBody.put("score_threshold", 1.0);
-        requestBody.put("history", new ArrayList<>());
-        requestBody.put("stream", false);
-        requestBody.put("temperature", 0.7);
-        requestBody.put("max_tokens", 0);
-        requestBody.put("prompt_name", "default");
-        requestBody.put("return_direct", true);
-        String outputStr = JSON.toJSONString(requestBody);
-        JSON json = HttpRequest.httpRequest(url,requestMethod,outputStr,"application/json");
-        JSONObject docJsonObject = JSONObject.parseObject(json.toJSONString());
-        return docJsonObject;
-    }
     public static int RAGchat(Question question) {
        // 返回队列信息
        return 0;
@@ -172,30 +137,77 @@ public static String getToken() {
         JSONObject jsonObject = JSONObject.parseObject(json.toJSONString());
         return jsonObject;
     }
-    public static JSONObject openRAGchat(String content) {
+//     public static JSONObject openRAGchat(String content) {
         
+//         String requestMethod = "POST";
+//         String url = "http://127.0.0.1:1145/chat/kb_chat";//post请求时格式
+//         OpenAiClient openAiClient = OpenAiClient.builder()
+//                 .apiKey(Arrays.asList("EMPTY"))
+//                 .apiHost(url)
+//                 //自定义key的获取策略：默认KeyRandomStrategy
+//                 //.keyStrategy(new KeyRandomStrategy())
+//                 //自己做了代理就传代理地址，没有可不不传
+// //                .apiHost("https://自己代理的服务器地址/")
+//                 .build();
+//         Message message = Message.builder().role(Message.Role.USER).content(content).build();
+//         ChatCompletion chatCompletion = ChatCompletion.builder().messages(Arrays.asList(message)).build();
+//         chatCompletion.setStream(true);
+//         chatCompletion.setTemperature(0.7);
+//         chatCompletion.setModel("custom-glm4-chat");
+        
+//         ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
+//         JSONObject docJsonObject = new JSONObject();
+//         docJsonObject.put("content", chatCompletionResponse.getChoices().get(0).getMessage().getContent());
+//         chatCompletionResponse.getChoices().forEach(e -> {
+//             System.out.println(e.getMessage());
+//         });
+//         return docJsonObject;
+//     }
+
+    /**
+     * 将用户的内容发送到QAnything接口，仅获取检索的文档，并返回JSONObject
+     *
+     * @param content 用户输入的问题内容
+     * @return 包含检索文档的JSONObject，如果请求失败，则返回null
+     */
+    public static JSONObject RAGFileChat(String content) {
         String requestMethod = "POST";
-        String url = "http://127.0.0.1:1145/chat/kb_chat";//post请求时格式
-        OpenAiClient openAiClient = OpenAiClient.builder()
-                .apiKey(Arrays.asList("EMPTY"))
-                .apiHost(url)
-                //自定义key的获取策略：默认KeyRandomStrategy
-                //.keyStrategy(new KeyRandomStrategy())
-                //自己做了代理就传代理地址，没有可不不传
-//                .apiHost("https://自己代理的服务器地址/")
-                .build();
-        Message message = Message.builder().role(Message.Role.USER).content(content).build();
-        ChatCompletion chatCompletion = ChatCompletion.builder().messages(Arrays.asList(message)).build();
-        chatCompletion.setStream(true);
-        chatCompletion.setTemperature(0.7);
-        chatCompletion.setModel("custom-glm4-chat");
-        
-        ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
-        JSONObject docJsonObject = new JSONObject();
-        docJsonObject.put("content", chatCompletionResponse.getChoices().get(0).getMessage().getContent());
-        chatCompletionResponse.getChoices().forEach(e -> {
-            System.out.println(e.getMessage());
-        });
-        return docJsonObject;
+        String url = "http://127.0.0.1:8777/api/local_doc_qa/local_doc_chat"; // 替换{your_host}为实际主机地址
+
+        // 构建请求体
+        HashMap<String, Object> requestBody = new HashMap<>();
+        requestBody.put("kb_ids", Arrays.asList(
+            "KB613148ff494c41d4834f13ea66e21a25_240625",
+            "KBebb756d6b0a744b29c0044e3773c1aee_240625",
+            "KB5739af62043c48f8ab1a782be7a47874_240625"
+        )); // 替换为实际的知识库ID
+        requestBody.put("question", content);
+        requestBody.put("user_id", "zzp");
+        requestBody.put("streaming", true); // 是否流式返回
+        requestBody.put("history", new ArrayList<>()); // 历史对话
+        requestBody.put("networking", false); // 是否开启联网检索
+        requestBody.put("product_source", "saas_qa");
+        requestBody.put("rerank", true);
+        requestBody.put("only_need_search_results", true); // 只需要搜索结果
+        requestBody.put("hybrid_search", true);
+        requestBody.put("max_token", 70000);
+        requestBody.put("api_base", "http://127.0.0.1:9991/v1");
+        requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
+        requestBody.put("model", "custom-glm4-chat");
+        requestBody.put("api_context_length", 16384);
+        requestBody.put("chunk_size", 2000);
+        requestBody.put("top_p", 0.99);
+        requestBody.put("temperature", 0.7);
+
+        String outputStr = JSON.toJSONString(requestBody);
+
+        try {
+            JSON json = HttpRequest.httpRequest(url, requestMethod, outputStr, "application/json");
+            JSONObject jsonObject = JSONObject.parseObject(json.toJSONString());
+            return jsonObject;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // 请求失败时返回null
+        }
     }
 }
