@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.io.OutputStream;
@@ -32,34 +35,26 @@ import java.net.URL;
 /**
  * 访问QAnything接口
  */
+@Component
 public class GptConfig {
-//    public static String getToken(){
-//        String token = "";
-//        String url = "https://aip.baidubce.com/oauth/2.0/token?client_id=ECU7TJEA7CVK1jL2ES6vzgH8&client_secret=p0W3slm0opKfMWWR09j6px9vj8aY80J5&grant_type=client_credentials";
-//        try {
-//            token = HttpUtils.httpPost(url);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        JSONObject jsonObject = JSONObject.parseObject(token);
-//        String access_token = jsonObject.getString("access_token");
-//        return access_token;
-//    }
-public static String getToken() {
-    String token = "";
-    String url = "https://aip.baidubce.com/oauth/2.0/token?client_id=ML2S2Kmn7e6rVAE2OBC1g0RG&client_secret=HuYbCQeGtbmcbiPjBflaQOfKuuZH6GiM&grant_type=client_credentials";
-    try {
-        token = HttpUtils.httpPost(url);
-    } catch (Exception e) {
-        e.printStackTrace();
+
+    @Value("${app.server.ip}")
+    private String serverIp;
+    public static String getToken() {
+        String token = "";
+        String url = "https://aip.baidubce.com/oauth/2.0/token?client_id=ML2S2Kmn7e6rVAE2OBC1g0RG&client_secret=HuYbCQeGtbmcbiPjBflaQOfKuuZH6GiM&grant_type=client_credentials";
+        try {
+            token = HttpUtils.httpPost(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonObject = JSONObject.parseObject(token);
+        if (jsonObject != null && jsonObject.containsKey("access_token")) {
+            return jsonObject.getString("access_token");
+        } else {
+            return null; // 返回空值或者其他默认值，表示获取 token 失败
+        }
     }
-    JSONObject jsonObject = JSONObject.parseObject(token);
-    if (jsonObject != null && jsonObject.containsKey("access_token")) {
-        return jsonObject.getString("access_token");
-    } else {
-        return null; // 返回空值或者其他默认值，表示获取 token 失败
-    }
-}
     public static String getMessage(String content) {
         String requestMethod = "POST";
         String url = "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions?access_token="+getToken();//post请求时格式
@@ -119,10 +114,6 @@ public static String getToken() {
         return result;
     }
 
-    public static int RAGchat(Question question) {
-       // 返回队列信息
-       return 0;
-    }
 
 
     /**
@@ -131,9 +122,9 @@ public static String getToken() {
      * @param content 用户输入的问题内容
      * @return 包含检索文档的JSONObject，如果请求失败，则返回null
      */
-    public static void RAGFileChat(String content, SseEmitter emitter) {
+    public void RAGFileChat(String content, SseEmitter emitter) {
         String requestMethod = "POST";
-        String url = "http://10.102.33.6:8777/api/local_doc_qa/local_doc_chat"; // 替换{your_host}为实际主机地址
+        String url = "http://" + serverIp + ":8777/api/local_doc_qa/local_doc_chat";
 
         // 构建请求体
         HashMap<String, Object> requestBody = new HashMap<>();
@@ -152,7 +143,7 @@ public static String getToken() {
         requestBody.put("only_need_search_results", false); // 只需要搜索结果
         requestBody.put("hybrid_search", true);
         requestBody.put("max_token", 7114);
-        requestBody.put("api_base", "http://10.102.33.6:9991/v1");
+        requestBody.put("api_base", "http://" + serverIp + ":9997/v1");
         requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
         requestBody.put("model", "custom-glm4-chat");
         requestBody.put("api_context_length", 72704);
@@ -181,7 +172,8 @@ public static String getToken() {
                     if (responseLine.startsWith("data: ")) {
                         responseLine = responseLine.replaceFirst("data: ", "");
                     }
-                    emitter.send(SseEmitter.event().data(responseLine));
+                    if(!responseLine.equals(""))
+                        emitter.send(SseEmitter.event().data(responseLine));
                 }
                 emitter.complete();
             }
