@@ -19,8 +19,6 @@ public class StreamController {
         // 获取用户信息
         String username = authentication.getName();
         SseEmitter emitter = new SseEmitter();
-        // 获取用户信息
-        String username = authentication.getName();
         new Thread(() -> {
             try {
                 // 这里可以根据需要使用用户信息进行日志记录或其他操作
