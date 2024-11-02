@@ -1,36 +1,23 @@
 package top.javahai.chatroom.config;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
-import top.javahai.chatroom.entity.Question;
-import top.javahai.chatroom.utils.HttpRequest;
-import top.javahai.chatroom.utils.HttpUtils;
-
-import com.unfbx.chatgpt.OpenAiClient;
-import com.unfbx.chatgpt.entity.billing.BillingUsage;
-import com.unfbx.chatgpt.entity.billing.CreditGrantsResponse;
-import com.unfbx.chatgpt.entity.billing.Subscription;
-import com.unfbx.chatgpt.entity.chat.ChatCompletion;
-import com.unfbx.chatgpt.entity.chat.ChatCompletionResponse;
-import com.unfbx.chatgpt.entity.chat.Message;
-import com.unfbx.chatgpt.entity.completions.Completion;
-import com.unfbx.chatgpt.interceptor.OpenAILogger;
-import com.unfbx.chatgpt.sse.ConsoleEventSourceListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.net.HttpURLConnection;
-import java.io.OutputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+import top.javahai.chatroom.utils.HttpRequest;
+import top.javahai.chatroom.utils.HttpUtils;
 
 /**
  * 访问QAnything接口

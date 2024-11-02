@@ -1,14 +1,21 @@
 package top.javahai.chatroom.controller;
 
-import org.yaml.snakeyaml.events.Event;
+import javax.annotation.Resource;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import top.javahai.chatroom.entity.RespBean;
 import top.javahai.chatroom.entity.RespPageBean;
 import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.service.UserService;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * (User)表控制层

@@ -1,31 +1,10 @@
 package top.javahai.chatroom.config;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jdk.nashorn.internal.runtime.logging.Logger;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.jsoup.nodes.Document;
-import top.javahai.chatroom.dao.NoticeDao;
-import top.javahai.chatroom.entity.Notice;
-import top.javahai.chatroom.service.NoticeService;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import top.javahai.chatroom.service.NoticeService;
 /**
  * 爬虫, 估计用不到了
  */
