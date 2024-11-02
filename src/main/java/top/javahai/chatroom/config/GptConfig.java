@@ -180,7 +180,7 @@ public static String getToken() {
      */
     public static void RAGFileChat(String content, SseEmitter emitter) {
         String requestMethod = "POST";
-        String url = "http://127.0.0.1:8777/api/local_doc_qa/local_doc_chat"; // 替换{your_host}为实际主机地址
+        String url = "http://10.102.33.6:8777/api/local_doc_qa/local_doc_chat"; // 替换{your_host}为实际主机地址
 
         // 构建请求体
         HashMap<String, Object> requestBody = new HashMap<>();
@@ -199,7 +199,7 @@ public static String getToken() {
         requestBody.put("only_need_search_results", false); // 只需要搜索结果
         requestBody.put("hybrid_search", true);
         requestBody.put("max_token", 7114);
-        requestBody.put("api_base", "http://127.0.0.1:9991/v1");
+        requestBody.put("api_base", "http://10.102.33.6:9991/v1");
         requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
         requestBody.put("model", "custom-glm4-chat");
         requestBody.put("api_context_length", 72704);
@@ -224,7 +224,10 @@ public static String getToken() {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
                 String responseLine;
                 while ((responseLine = br.readLine()) != null) {
-                    // 逐行发送数据
+                    // 修改返回格式
+                    if (responseLine.startsWith("data: ")) {
+                        responseLine = responseLine.replaceFirst("data: ", "");
+                    }
                     emitter.send(SseEmitter.event().data(responseLine));
                 }
                 emitter.complete();
