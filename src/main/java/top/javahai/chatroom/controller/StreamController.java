@@ -16,6 +16,8 @@ public class StreamController {
 
     @PostMapping("/RAGFileChatStream")
     public SseEmitter streamRAGFileChat(@RequestBody String content, Authentication authentication) {
+        // 获取用户信息
+        String username = authentication.getName();
         SseEmitter emitter = new SseEmitter();
         // 获取用户信息
         String username = authentication.getName();

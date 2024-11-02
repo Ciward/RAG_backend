@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
- * 百度文心一言接入
+ * 访问QAnything接口
  */
 public class GptConfig {
 //    public static String getToken(){
@@ -123,54 +123,7 @@ public static String getToken() {
        // 返回队列信息
        return 0;
     }
-    public static JSONObject requestRAGserver(String content) {
-        
-        String requestMethod = "POST";
-        String url = "http://127.0.0.1:1145/chat/kb_chat";//post请求时格式
-        HashMap<String, Object> requestBody = new HashMap<>();
-        requestBody.put("query", content);
-        requestBody.put("model", "custom-glm4-chat");
-        requestBody.put("mode", "local_kb");
-        requestBody.put("kb_name", "campus");
-        requestBody.put("top_k", 6);
-        requestBody.put("score_threshold", 1.0);
-        requestBody.put("history", new ArrayList<>());
-        requestBody.put("stream", false);
-        requestBody.put("temperature", 0.7);
-        requestBody.put("max_tokens", 0);
-        requestBody.put("prompt_name", "default");
-        requestBody.put("return_direct", false);
-        String outputStr = JSON.toJSONString(requestBody);
-        JSON json = HttpRequest.httpRequest(url,requestMethod,outputStr,"application/json");
-        JSONObject jsonObject = JSONObject.parseObject(json.toJSONString());
-        return jsonObject;
-    }
-//     public static JSONObject openRAGchat(String content) {
-        
-//         String requestMethod = "POST";
-//         String url = "http://127.0.0.1:1145/chat/kb_chat";//post请求时格式
-//         OpenAiClient openAiClient = OpenAiClient.builder()
-//                 .apiKey(Arrays.asList("EMPTY"))
-//                 .apiHost(url)
-//                 //自定义key的获取策略：默认KeyRandomStrategy
-//                 //.keyStrategy(new KeyRandomStrategy())
-//                 //自己做了代理就传代理地址，没有可不不传
-// //                .apiHost("https://自己代理的服务器地址/")
-//                 .build();
-//         Message message = Message.builder().role(Message.Role.USER).content(content).build();
-//         ChatCompletion chatCompletion = ChatCompletion.builder().messages(Arrays.asList(message)).build();
-//         chatCompletion.setStream(true);
-//         chatCompletion.setTemperature(0.7);
-//         chatCompletion.setModel("custom-glm4-chat");
-        
-//         ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
-//         JSONObject docJsonObject = new JSONObject();
-//         docJsonObject.put("content", chatCompletionResponse.getChoices().get(0).getMessage().getContent());
-//         chatCompletionResponse.getChoices().forEach(e -> {
-//             System.out.println(e.getMessage());
-//         });
-//         return docJsonObject;
-//     }
+
 
     /**
      * 将用户的内容发送到QAnything接口，仅获取检索的文档，并返回JSONObject
