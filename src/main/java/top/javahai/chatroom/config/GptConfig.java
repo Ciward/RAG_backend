@@ -224,7 +224,10 @@ public static String getToken() {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
                 String responseLine;
                 while ((responseLine = br.readLine()) != null) {
-                    // 逐行发送数据
+                    // 修改返回格式
+                    if (responseLine.startsWith("data: ")) {
+                        responseLine = responseLine.replaceFirst("data: ", "");
+                    }
                     emitter.send(SseEmitter.event().data(responseLine));
                 }
                 emitter.complete();

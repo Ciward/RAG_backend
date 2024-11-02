@@ -16,11 +16,11 @@ public class StreamController {
 
     @PostMapping("/RAGFileChatStream")
     public SseEmitter streamRAGFileChat(@RequestBody String content, Authentication authentication) {
+        // 获取用户信息
+        String username = authentication.getName();
         SseEmitter emitter = new SseEmitter();
         new Thread(() -> {
             try {
-                // 获取用户信息
-                String username = authentication.getName();
                 // 这里可以根据需要使用用户信息进行日志记录或其他操作
                 // 调用GptConfig的RAGFileChat方法
                 GptConfig.RAGFileChat(content, emitter);
