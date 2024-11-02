@@ -6,16 +6,7 @@ import top.javahai.chatroom.entity.Question;
 import top.javahai.chatroom.utils.HttpRequest;
 import top.javahai.chatroom.utils.HttpUtils;
 
-import com.unfbx.chatgpt.OpenAiClient;
-import com.unfbx.chatgpt.entity.billing.BillingUsage;
-import com.unfbx.chatgpt.entity.billing.CreditGrantsResponse;
-import com.unfbx.chatgpt.entity.billing.Subscription;
-import com.unfbx.chatgpt.entity.chat.ChatCompletion;
-import com.unfbx.chatgpt.entity.chat.ChatCompletionResponse;
-import com.unfbx.chatgpt.entity.chat.Message;
-import com.unfbx.chatgpt.entity.completions.Completion;
-import com.unfbx.chatgpt.interceptor.OpenAILogger;
-import com.unfbx.chatgpt.sse.ConsoleEventSourceListener;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +14,7 @@ import java.util.List;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+
 import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
