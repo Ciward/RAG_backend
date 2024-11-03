@@ -1,15 +1,14 @@
 package top.javahai.chatroom.controller;
 
-import top.javahai.chatroom.utils.HttpUtils;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.aliyuncs.http.FormatType;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.binarywang.java.emoji.EmojiConverter;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -17,31 +16,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.binarywang.java.emoji.EmojiConverter;
+
 import top.javahai.chatroom.config.GptConfig;
 import top.javahai.chatroom.dao.QuestionDao;
 import top.javahai.chatroom.entity.GroupMsgContent;
 import top.javahai.chatroom.entity.Message;
 import top.javahai.chatroom.entity.Notice;
-import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.entity.Question;
+import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.service.GroupMsgContentService;
 import top.javahai.chatroom.service.NoticeService;
-import top.javahai.chatroom.utils.NlpUtil;
-import top.javahai.chatroom.utils.TuLingUtil;
-
-import java.net.URI;
-import java.net.URLEncoder;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import top.javahai.chatroom.utils.HttpUtils;
 
 /**
  */
