@@ -126,7 +126,7 @@ public class GptConfig {
         requestBody.put("history", new ArrayList<>()); // 历史对话
         requestBody.put("networking", false); // 是否开启联网检索
         requestBody.put("product_source", "saas_qa");
-        requestBody.put("rerank", true);
+        requestBody.put("rerank", false);
         requestBody.put("only_need_search_results", false); // 只需要搜索结果
         requestBody.put("hybrid_search", true);
         requestBody.put("max_token", 7114);
