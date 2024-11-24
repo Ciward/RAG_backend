@@ -4,19 +4,21 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import top.javahai.chatroom.config.GptConfig;
+import top.javahai.chatroom.config.RAGConfig;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/stream")
 public class StreamController {
     @Autowired
-    private GptConfig gptConfig;
+    private RAGConfig RAGConfig;
     @PostMapping("/RAGFileChatStream")
     public SseEmitter streamRAGFileChat(@RequestBody String content, Authentication authentication) {
         // 获取用户信息
@@ -25,15 +27,16 @@ public class StreamController {
         
         new Thread(() -> {
             try {
-                // 调用GptConfig的RAGFileChat方法
-                gptConfig.RAGFileChat(content, emitter);
+                // 调用RAGConfig的RAGFileChat方法
+                RAGConfig.RAGFileChat(content, emitter);
             } catch (Exception e) {
                 emitter.completeWithError(e);
             }
         }).start();
         return emitter;
     }
-    @PostMapping(value = "/RAGFileChatStreamNoauth", produces = "text/event-stream;charset=UTF-8")
+
+    @PostMapping(value = "/RAGFileChatStreamNoauth")
     public SseEmitter streamRAGFileChatNoauth(@RequestBody Map<String, String> requestBody) {
         SseEmitter emitter = new SseEmitter();
         // 从请求体中获取content字段
@@ -41,8 +44,8 @@ public class StreamController {
 
         new Thread(() -> {
             try {
-                // 调用GptConfig的RAGFileChat方法
-                gptConfig.RAGFileChat(content, emitter);
+                // 调用RAGConfig的RAGFileChat方法
+                RAGConfig.RAGFileChat(content, emitter);
             } catch (Exception e) {
                 emitter.completeWithError(e);
             }

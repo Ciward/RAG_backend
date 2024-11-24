@@ -3,7 +3,7 @@ def write_to_file(line):
     with open('test.json', 'a') as f:
         f.write(line + '\n')
 def test_stream_api():
-    url = "http://10.102.33.130:8082/api/stream/RAGFileChatStreamNoauth"  # 替换为实际的API地址
+    url = "http://127.0.0.1:8082/api/stream/RAGFileChatStreamNoauth"  # 替换为实际的API地址
     headers = {
         "Content-Type": "application/json"
         

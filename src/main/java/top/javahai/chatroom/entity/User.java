@@ -5,14 +5,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+
+
 /**
  * (User)实体类
  */
+
 public class User implements UserDetails {
 
     private Integer id;
     /**
      * 登录账号
+     */
+    private String role="user";
+    /**
+     * 用户角色
      */
     private String username;
     /**
@@ -56,6 +63,10 @@ public class User implements UserDetails {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public void setId(Integer id) {

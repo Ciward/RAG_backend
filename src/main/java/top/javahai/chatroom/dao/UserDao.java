@@ -18,7 +18,6 @@ public interface UserDao {
      */
     User loadUserByUsername(String username);
 
-
     /**
      * 获取除当前用户的所有用户
      * @param id
@@ -42,7 +41,6 @@ public interface UserDao {
      * @return 对象列表
      */
     List<User> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
-
 
     /**
      * 通过实体作为筛选条件查询
