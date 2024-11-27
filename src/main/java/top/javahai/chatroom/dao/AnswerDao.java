@@ -20,7 +20,7 @@ public interface AnswerDao {
      * @param answer 实例对象
      * @return 影响行数
      */
-    int updateValid(Integer id,Boolean valid);
+    int updateValid(Integer id,int valid);
 
     /**
      * 通过主键删除数据

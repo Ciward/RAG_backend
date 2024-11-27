@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 
 import top.javahai.chatroom.dao.AnswerDao;
 import top.javahai.chatroom.dao.QuestionDao;
@@ -12,10 +14,12 @@ import top.javahai.chatroom.entity.Answer;
 import top.javahai.chatroom.entity.RespBean;
 import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.config.RAGConfig;
+import top.javahai.chatroom.entity.Question;
+import top.javahai.chatroom.entity.RespPageBean;
 
 @Controller
-@RequestMapping("/answer")
-public class AnswerController {
+@RequestMapping("/QA")
+public class QAController {
   @Autowired
   private AnswerDao answerDao;
   @Autowired
@@ -43,6 +47,7 @@ public class AnswerController {
       }
     }
 
+
     /**
      * 管理员审核回答合法性
      * @param authentication
@@ -50,7 +55,7 @@ public class AnswerController {
      * @param valid
      */
     @RequestMapping("/checkAnswer")
-    public RespBean checkAnswer(Authentication authentication, Integer answerId, Boolean valid){
+    public RespBean checkAnswer(Authentication authentication, Integer answerId, int valid){
         User user = ((User) authentication.getPrincipal());
         if(user.getRole().equals("admin")){
           if(answerDao.updateValid(answerId, valid)>=1){
@@ -60,7 +65,7 @@ public class AnswerController {
             String answerContent = answer.getContent();
 
             // 调用 RAGConfig 插入 Q&A
-            if (valid) {
+            if (valid==1) {
                 boolean success = ragConfig.insertQA(questionContent, answerContent);
                 if (!success) {
                     return RespBean.error("审核成功，但插入Q&A失败！");
@@ -75,4 +80,57 @@ public class AnswerController {
           return RespBean.error("您没有权限审核回答！");
         }
     }
+
+    /**
+     * 分页查询问题
+     * @param page
+     * @param size
+     * @return
+     */
+    //     调用示例:
+    // 10
+    // 返回格式将是:
+    // {
+    //   "total": 100,
+    //   "data": [
+    //     {
+    //       "id": 1,
+    //       "content": "问题内容",
+    //       "userId": 1,
+    //       "createTime": "2024-01-01 12:00:00"
+    //     }
+    //     // ...更多问题
+    //   ]
+    // }
+
+    @RequestMapping("/getQuestionsByPage")
+    public RespPageBean getQuestionsByPage(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        
+        List<Question> questions = questionDao.queryByPage(page - 1, size);
+        Long total = questionDao.getTotal();
+        
+        RespPageBean respPageBean = new RespPageBean();
+        respPageBean.setData(questions);
+        respPageBean.setTotal(total);
+        
+        return respPageBean;
+    }
+
+    /**
+     * 根据问题ID查询回答
+     * @param questionId
+     * @return
+     */
+    @RequestMapping("/getAnswersByQuestionId")
+    public RespPageBean getAnswersByQuestionId(Integer questionId){
+      List<Answer> answers = answerDao.queryByQuestionId(questionId);
+      RespPageBean respPageBean = new RespPageBean();
+      respPageBean.setData(answers);
+      respPageBean.setTotal(Long.valueOf(answers.size()));
+      
+      return respPageBean;
+    }
+    
 }

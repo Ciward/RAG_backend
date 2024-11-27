@@ -59,4 +59,20 @@ public interface QuestionDao {
      */
     int deleteById(Integer id);
 
+    /**
+     * 分页查询并按答案数量和创建时间排序
+     *
+     * @param page 页码
+     * @param size 每页大小
+     * @return 对象列表
+     */
+    List<Question> queryByPage(@Param("page") int page, @Param("size") int size);
+
+    /**
+     * 获取问题总数
+     *
+     * @return 总数
+     */
+    Long getTotal();
+
 }
