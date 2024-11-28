@@ -11,3 +11,4 @@
 target
 test.json
 test/*
+.DS_Store
