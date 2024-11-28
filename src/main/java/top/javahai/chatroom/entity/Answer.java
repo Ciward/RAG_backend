@@ -12,4 +12,5 @@ public class Answer {
     private Integer questionId;
     private int valid=0;
     private Date createTime;
+    private Integer adminId;
 }

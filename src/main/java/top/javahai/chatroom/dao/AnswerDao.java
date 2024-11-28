@@ -18,9 +18,10 @@ public interface AnswerDao {
      * 修改数据valid
      *
      * @param answer 实例对象
+     * @param adminId 管理员ID
      * @return 影响行数
      */
-    int updateValid(Integer id,int valid);
+    int updateValid(Integer id,int valid,Integer adminId);
 
     /**
      * 通过主键删除数据

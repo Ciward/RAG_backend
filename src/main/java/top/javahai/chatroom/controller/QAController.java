@@ -58,7 +58,7 @@ public class QAController {
     public RespBean checkAnswer(Authentication authentication, Integer answerId, int valid){
         User user = ((User) authentication.getPrincipal());
         if(user.getRole().equals("admin")){
-          if(answerDao.updateValid(answerId, valid)>=1){
+          if(answerDao.updateValid(answerId, valid, user.getId())>=1){
             // 获取问题和回答内容
             Answer answer = answerDao.queryById(answerId);
             String questionContent = questionDao.queryById(answer.getQuestionId()).getContent();
@@ -132,5 +132,5 @@ public class QAController {
       
       return respPageBean;
     }
-    
+
 }

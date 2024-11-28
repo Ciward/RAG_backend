@@ -16,6 +16,7 @@
         UPDATE answer
         <set>
             <if test="valid != null">valid = #{valid},</if>
+            <if test="adminId != null">admin_id = #{adminId},</if>
         </set>
         WHERE id = #{id}
     </update>
