@@ -1,12 +1,14 @@
 package top.javahai.chatroom.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.service.impl.UserServiceImpl;
@@ -28,7 +30,14 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         super("/api/**");
 
     }
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
+    @Override
+    public void afterPropertiesSet() {
+        Assert.notNull(authenticationManager, "authenticationManager must be specified");
+        super.afterPropertiesSet();
+    }
     // @Override
     // protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
     //         throws ServletException, IOException {
