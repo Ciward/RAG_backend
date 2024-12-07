@@ -5,6 +5,7 @@ import top.javahai.chatroom.entity.RespPageBean;
 import top.javahai.chatroom.entity.User;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * (User)表服务接口
@@ -38,6 +39,19 @@ public interface UserService {
      * @return 实例对象
      */
     User queryById(Integer id);
+    /**
+     * 通过用户名查询单条数据
+     * @param username
+     * @return
+     */
+    User findByUsername(String username);
+
+    /**
+	 * 查找用户的菜单权限标识集合
+	 * @param userName
+	 * @return
+	 */
+	Set<String> findPermissions(String username);
 
     /**
      * 查询多条数据
@@ -46,6 +60,7 @@ public interface UserService {
      * @param limit 查询条数
      * @return 对象列表
      */
+    
     List<User> queryAllByLimit(int offset, int limit);
 
     /**

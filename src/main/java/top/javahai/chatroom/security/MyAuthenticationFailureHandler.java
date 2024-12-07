@@ -1,4 +1,4 @@
-package top.javahai.chatroom.config;
+package top.javahai.chatroom.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;

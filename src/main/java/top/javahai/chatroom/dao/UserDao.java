@@ -34,6 +34,13 @@ public interface UserDao {
     User queryById(Integer id);
 
     /**
+     * 通过用户名查询单条数据
+     * @param username
+     * @return
+     */
+    User queryByUsername(String username);
+
+    /**
      * 查询指定行数据
      *
      * @param offset 查询起始位置
