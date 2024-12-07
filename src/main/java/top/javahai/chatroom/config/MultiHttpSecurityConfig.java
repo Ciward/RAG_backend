@@ -33,6 +33,7 @@ import top.javahai.chatroom.entity.RespBean;
 import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.service.impl.AdminServiceImpl;
 import top.javahai.chatroom.service.impl.UserServiceImpl;
+import top.javahai.chatroom.utils.TokenUtil;
 
 /**
  */
@@ -149,7 +150,6 @@ public class MultiHttpSecurityConfig {
     //登录验证
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-      //将验证码过滤器添加在用户名密码过滤器的前面
       http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
       http.authorizeRequests()
               .anyRequest().authenticated()
@@ -166,13 +166,17 @@ public class MultiHttpSecurityConfig {
                   resp.setContentType("application/json;charset=utf-8");
                   PrintWriter out=resp.getWriter();
                   User user=(User) authentication.getPrincipal();
+                  user.setId(null);
                   user.setPassword(null);
-                  //更新用户状态为在线
+                  // 生成Token
+                  String token = TokenUtil.sign(user);
+                  // 更新用户状态为在线
                   userService.setUserStateToOn(user.getId());
                   user.setUserStateId(1);
-                  //广播系统通知消息
+                  // 广播系统通知消息
                   simpMessagingTemplate.convertAndSend("/topic/notification","系统消息：用户【"+user.getNickname()+"】进入了聊天室");
                   RespBean ok = RespBean.ok("登录成功", user);
+                  ok.setToken(token);
                   String s = new ObjectMapper().writeValueAsString(ok);
                   out.write(s);
                   out.flush();
@@ -214,4 +218,5 @@ public class MultiHttpSecurityConfig {
     }
   }
 
+  
 }

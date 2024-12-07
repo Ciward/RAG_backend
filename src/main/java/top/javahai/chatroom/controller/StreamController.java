@@ -14,8 +14,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import top.javahai.chatroom.config.RAGConfig;
 
 @RestController
-@CrossOrigin(origins = "*")
-@RequestMapping("/api/stream")
+
+@RequestMapping("/stream")
 public class StreamController {
     @Autowired
     private RAGConfig RAGConfig;

@@ -7,7 +7,7 @@ public class RespBean {
   private Integer status;//状态码
   private String msg;//返回消息
   private Object obj;//返回实体
-
+  private String token;//返回Token
   public static RespBean build(){
     return new RespBean();
   }
@@ -60,6 +60,15 @@ public class RespBean {
 
   public RespBean setObj(Object obj) {
     this.obj = obj;
+    return this;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public RespBean setToken(String token) {
+    this.token = token;
     return this;
   }
 }
