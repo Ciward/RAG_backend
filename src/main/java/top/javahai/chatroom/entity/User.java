@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -15,6 +16,18 @@ import java.util.Collections;
 
 public class User implements UserDetails {
 
+    // public User(String username, String password, Collection<? extends GrantedAuthority> authorities){
+    //     this.username=username;
+    //     this.password=password;
+
+    // }
+    // public User(JwtUserDetails jwtUserDetails){
+    //     this.username=jwtUserDetails.getUsername();
+    //     this.password=jwtUserDetails.getPassword();
+    // }
+    /**
+     * 用户id
+     */
     private Integer id;
     /**
      * 登录账号

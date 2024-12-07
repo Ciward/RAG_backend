@@ -11,6 +11,11 @@
         <result property="userStateId" column="user_state_id" jdbcType="INTEGER"/>
         <result property="isEnabled" column="is_enabled" jdbcType="OTHER"/>
         <result property="isLocked" column="is_locked" jdbcType="OTHER"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="studentId" column="student_id" jdbcType="VARCHAR"/>
+        <result property="nation" column="nation" jdbcType="VARCHAR"/>
+        <result property="hometown" column="hometown" jdbcType="VARCHAR"/>
     </resultMap>
 <!--根据用户名查询用户 -->
     <select id="loadUserByUsername" resultMap="UserMap">
@@ -25,20 +30,20 @@
     <!--查询单个-->
     <select id="queryById" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked
+          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         where id = #{id}
     </select>
     <select id="queryByUsername" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked
+          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         where username = #{username}
     </select>
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked
+          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         limit #{offset}, #{limit}
     </select>
@@ -46,7 +51,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked
+          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         <where>
             <if test="id != null">
@@ -78,8 +83,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into chatroom.user(username, nickname, password, user_profile, user_state_id, is_enabled, is_locked)
-        values (#{username}, #{nickname}, #{password}, #{userProfile}, #{userStateId}, #{isEnabled}, #{isLocked})
+        insert into chatroom.user(username, nickname, password, user_profile, user_state_id, is_enabled, is_locked, gender, name, student_id, nation, hometown)
+        values (#{username}, #{nickname}, #{password}, #{userProfile}, #{userStateId}, #{isEnabled}, #{isLocked}, #{gender}, #{name}, #{studentId}, #{nation}, #{hometown})
     </insert>
 
     <!--通过主键修改数据-->
@@ -106,6 +111,21 @@
             </if>
             <if test="isLocked != null">
                 is_locked = #{isLocked},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="studentId != null and studentId != ''">
+                student_id = #{studentId},
+            </if>
+            <if test="nation != null and nation != ''">
+                nation = #{nation},
+            </if>
+            <if test="hometown != null and hometown != ''">
+                hometown = #{hometown},
             </if>
         </set>
         where id = #{id}

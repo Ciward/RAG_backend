@@ -12,7 +12,6 @@
 // import org.springframework.context.annotation.Configuration;
 // import org.springframework.core.annotation.Order;
 // import org.springframework.messaging.simp.SimpMessagingTemplate;
-// import org.springframework.security.authentication.AuthenticationManager;
 // import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 // import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 // import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -32,8 +31,6 @@
 // import top.javahai.chatroom.entity.Admin;
 // import top.javahai.chatroom.entity.RespBean;
 // import top.javahai.chatroom.entity.User;
-// import top.javahai.chatroom.security.MyAuthenticationFailureHandler;
-// import top.javahai.chatroom.security.MyAuthenticationSuccessHandler;
 // import top.javahai.chatroom.service.impl.AdminServiceImpl;
 // import top.javahai.chatroom.service.impl.UserServiceImpl;
 
@@ -130,10 +127,6 @@
 //     SimpMessagingTemplate simpMessagingTemplate;
 //     @Autowired
 //     MyAuthenticationFailureHandler myAuthenticationFailureHandler;
-//     @Autowired
-//     MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
-//     @Autowired
-//     MyLogoutSuccessHandler myLogoutSuccessHandler;
 
 //     //验证服务
 //     @Override
@@ -156,6 +149,7 @@
 //     //登录验证
 //     @Override
 //     protected void configure(HttpSecurity http) throws Exception {
+//       //将验证码过滤器添加在用户名密码过滤器的前面
 //       http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
 //       http.authorizeRequests()
 //               .anyRequest().authenticated()
@@ -166,7 +160,25 @@
 //               .loginPage("/login")
 //               .loginProcessingUrl("/doLogin")
 //               //成功处理
-//               .successHandler(myAuthenticationSuccessHandler)
+//               .successHandler(new AuthenticationSuccessHandler() {
+//                 @Override
+//                 public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
+//                   resp.setContentType("application/json;charset=utf-8");
+//                   PrintWriter out=resp.getWriter();
+//                   User user=(User) authentication.getPrincipal();
+//                   user.setPassword(null);
+//                   //更新用户状态为在线
+//                   userService.setUserStateToOn(user.getId());
+//                   user.setUserStateId(1);
+//                   //广播系统通知消息
+//                   simpMessagingTemplate.convertAndSend("/topic/notification","系统消息：用户【"+user.getNickname()+"】进入了聊天室");
+//                   RespBean ok = RespBean.ok("登录成功", user);
+//                   String s = new ObjectMapper().writeValueAsString(ok);
+//                   out.write(s);
+//                   out.flush();
+//                   out.close();
+//                 }
+//               })
 //               //失败处理
 //               .failureHandler(myAuthenticationFailureHandler)
 //               .permitAll()//返回值直接返回
@@ -174,7 +186,21 @@
 //               //登出处理
 //               .logout()
 //               .logoutUrl("/logout")
-//               .logoutSuccessHandler(myLogoutSuccessHandler)
+//               .logoutSuccessHandler(new LogoutSuccessHandler() {
+//                 @Override
+//                 public void onLogoutSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
+//                   //更新用户状态为离线
+//                   User user = (User) authentication.getPrincipal();
+//                   userService.setUserStateToLeave(user.getId());
+//                   //广播系统消息
+//                   simpMessagingTemplate.convertAndSend("/topic/notification","系统消息：用户【"+user.getNickname()+"】退出了聊天室");
+//                   resp.setContentType("application/json;charset=utf-8");
+//                   PrintWriter out=resp.getWriter();
+//                   out.write(new ObjectMapper().writeValueAsString(RespBean.ok("成功退出！")));
+//                   out.flush();
+//                   out.close();
+//                 }
+//               })
 //               .permitAll()
 //               .and()
 //               .csrf().disable()//关闭csrf防御方便调试
@@ -188,13 +214,4 @@
 //     }
 //   }
 
-//   @Configuration
-//   @EnableWebSecurity
-//   public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//     @Bean
-//     @Override
-//     public AuthenticationManager authenticationManagerBean() throws Exception {
-//         return super.authenticationManagerBean();
-//     }
-//   }
 // }
