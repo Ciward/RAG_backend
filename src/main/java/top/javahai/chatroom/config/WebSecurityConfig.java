@@ -1,4 +1,11 @@
 package top.javahai.chatroom.config;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,18 +16,26 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import top.javahai.chatroom.security.JwtAuthenticatioToken;
 import top.javahai.chatroom.security.JwtAuthenticationFilter;
 import top.javahai.chatroom.security.JwtAuthenticationProvider;
 import top.javahai.chatroom.security.JwtLoginFilter;
 import top.javahai.chatroom.security.MyAuthenticationFailureHandler;
 import top.javahai.chatroom.security.MyAuthenticationSuccessHandler;
 import top.javahai.chatroom.security.MyLogoutSuccessHandler;
+import top.javahai.chatroom.utils.JwtTokenUtils;
 import top.javahai.chatroom.config.VerificationCodeFilter;
-
+import top.javahai.chatroom.entity.RespBean;
+import top.javahai.chatroom.entity.User;
+import top.javahai.chatroom.service.UserService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -36,7 +51,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private MyLogoutSuccessHandler myLogoutSuccessHandler;
     @Autowired
     private VerificationCodeFilter verificationCodeFilter;
-    
+    // @Autowired
+    // private UserService userService;
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         // 使用自定义登录身份认证组件
@@ -73,9 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .logout()
             .logoutUrl("/logout")
             .logoutSuccessHandler(myLogoutSuccessHandler)
-            .permitAll()
-            .and()
-            .csrf().disable();//关闭csrf防御方便调试
+            .permitAll();
         // 开启登录认证流程过滤器
         // http.addFilterBefore(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);

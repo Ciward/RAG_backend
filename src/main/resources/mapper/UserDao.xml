@@ -29,7 +29,12 @@
         from chatroom.user
         where id = #{id}
     </select>
-
+    <select id="queryByUsername" resultMap="UserMap">
+        select
+          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked
+        from chatroom.user
+        where username = #{username}
+    </select>
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="UserMap">
         select
