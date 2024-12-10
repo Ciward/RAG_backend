@@ -67,9 +67,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // 跨域预检请求
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             // swagger
-            // .antMatchers("/swagger**/**").permitAll()
-            // .antMatchers("/webjars/**").permitAll()
-            // .antMatchers("/v2/**").permitAll()
+            .antMatchers("/swagger**/**").permitAll()
+            .antMatchers("/webjars/**").permitAll()
+            .antMatchers("/v2/**").permitAll()
             .antMatchers("/login","/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname","/api/stream/RAGFileChatStreamNoauth").permitAll()
             // 其他所有请求需要身份认证
             .anyRequest().authenticated()
