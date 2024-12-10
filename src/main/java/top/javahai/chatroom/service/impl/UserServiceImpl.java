@@ -13,7 +13,6 @@ import top.javahai.chatroom.entity.RespBean;
 import top.javahai.chatroom.entity.RespPageBean;
 import top.javahai.chatroom.entity.User;
 import top.javahai.chatroom.security.GrantedAuthorityImpl;
-import top.javahai.chatroom.security.JwtUserDetails;
 import top.javahai.chatroom.service.UserService;
 import org.springframework.stereotype.Service;
 import top.javahai.chatroom.utils.UserUtil;
