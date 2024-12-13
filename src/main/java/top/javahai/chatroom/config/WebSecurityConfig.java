@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                 .antMatchers("/swagger**/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/v2/**").permitAll()
-                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname","/api/stream/RAGFileChatStreamNoauth").permitAll()
+                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname").permitAll()
                 // 其他所有请求需要身份认证
                 .anyRequest().authenticated()
                 .and()
@@ -136,7 +136,7 @@ public class WebSecurityConfig {
                 .antMatchers("/swagger**/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/v2/**").permitAll()
-                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname","/api/stream/RAGFileChatStreamNoauth").permitAll()
+                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname").permitAll()
                 // 其他所有请求需要身份认证
                 .anyRequest().authenticated();
             // 开启登录认证流程过滤器

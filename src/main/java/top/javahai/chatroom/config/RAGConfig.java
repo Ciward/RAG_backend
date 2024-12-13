@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.alibaba.fastjson.JSON;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 访问QAnything接口
@@ -53,11 +55,14 @@ public class RAGConfig {
         requestBody.put("only_need_search_results", false); // 只需要搜索结果
         requestBody.put("hybrid_search", true);
         requestBody.put("max_token", 7114);
-        requestBody.put("api_base", "http://" + serverIp + ":9997/v1");
-        requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
-        requestBody.put("model", "custom-glm4-chat");
+        // requestBody.put("api_base", "http://" + serverIp + ":9997/v1");
+        // requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
+        // requestBody.put("model", "custom-glm4-chat");
+        requestBody.put("api_base", "https://dashscope.aliyuncs.com/compatible-mode/v1");
+        requestBody.put("api_key", "sk-847209e141f94567a1ced8670e82aed2"); // 替换为实际的API密钥
+        requestBody.put("model", "qwen-turbo");
         requestBody.put("api_context_length", 72704);
-        requestBody.put("chunk_size", 2000);
+        requestBody.put("chunk_size", 3000);
         requestBody.put("top_p", 0.9);
         requestBody.put("top_k", 40);
         requestBody.put("temperature", 0.7);
@@ -131,5 +136,19 @@ public class RAGConfig {
             e.printStackTrace();
             return false;
         }
+    }
+    /**
+     * 获取文件的base64编码
+     * @param fileId
+     * @return
+     */
+    public String getFileBase64(String fileId){
+        String url = "http://" + serverIp + ":" + serverPort + "/api/local_doc_qa/get_file_base64";
+        HashMap<String, Object> requestBody = new HashMap<>();
+        requestBody.put("file_id", fileId);
+        String outputStr = JSON.toJSONString(requestBody);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(url, outputStr, String.class);
+        return response.getBody();
     }
 }

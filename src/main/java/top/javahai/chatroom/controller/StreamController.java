@@ -36,20 +36,20 @@ public class StreamController {
         return emitter;
     }
 
-    @PostMapping(value = "/RAGFileChatStreamNoauth")
-    public SseEmitter streamRAGFileChatNoauth(@RequestBody Map<String, String> requestBody) {
-        SseEmitter emitter = new SseEmitter();
-        // 从请求体中获取content字段
-        String content = requestBody.get("content");
+    // @PostMapping(value = "/RAGFileChatStreamNoauth")
+    // public SseEmitter streamRAGFileChatNoauth(@RequestBody Map<String, String> requestBody) {
+    //     SseEmitter emitter = new SseEmitter();
+    //     // 从请求体中获取content字段
+    //     String content = requestBody.get("content");
 
-        new Thread(() -> {
-            try {
-                // 调用RAGConfig的RAGFileChat方法
-                RAGConfig.RAGFileChat(content, emitter);
-            } catch (Exception e) {
-                emitter.completeWithError(e);
-            }
-        }).start();
-        return emitter;
-    }
+    //     new Thread(() -> {
+    //         try {
+    //             // 调用RAGConfig的RAGFileChat方法
+    //             RAGConfig.RAGFileChat(content, emitter);
+    //         } catch (Exception e) {
+    //             emitter.completeWithError(e);
+    //         }
+    //     }).start();
+    //     return emitter;
+    // }
 } 
