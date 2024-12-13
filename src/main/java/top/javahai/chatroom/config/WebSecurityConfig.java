@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -39,68 +40,108 @@ import top.javahai.chatroom.service.UserService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
+    @Configuration
+    @Order(1)
+    public class LoginSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
-    @Autowired
-    private MyAuthenticationFailureHandler myAuthenticationFailureHandler;
-    @Autowired
-    private MyLogoutSuccessHandler myLogoutSuccessHandler;
-    @Autowired
-    private VerificationCodeFilter verificationCodeFilter;
-    // @Autowired
-    // private UserService userService;
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // 使用自定义登录身份认证组件
-        auth.authenticationProvider(new JwtAuthenticationProvider(userDetailsService));
+        @Autowired
+        private UserService userService;
+        @Autowired
+        private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
+        @Autowired
+        private MyAuthenticationFailureHandler myAuthenticationFailureHandler;
+        @Autowired
+        private MyLogoutSuccessHandler myLogoutSuccessHandler;
+        @Autowired
+        private VerificationCodeFilter verificationCodeFilter;
+        // @Autowired
+        // private UserService userService;
+        @Override
+        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+            // 使用自定义登录身份认证组件
+            auth.authenticationProvider(new JwtAuthenticationProvider(userService));
+        }
+        @Override
+        public AuthenticationManager authenticationManager() throws Exception {
+            return super.authenticationManager();
+        }
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
+            // 访问控制时登录状态检查过滤器
+            //http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+            // 禁用 csrf, 由于使用的是JWT，我们这里不需要csrf
+            http.cors().and().csrf().disable()
+                .authorizeRequests()
+                // 跨域预检请求
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // swagger
+                .antMatchers("/swagger**/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/**").permitAll()
+                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname","/api/stream/RAGFileChatStreamNoauth").permitAll()
+                // 其他所有请求需要身份认证
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .usernameParameter("username")
+                .passwordParameter("password")
+                // .loginPage("/login2")
+                .loginProcessingUrl("/signin")
+                //成功处理
+                .successHandler(myAuthenticationSuccessHandler)
+                //失败处理
+                .failureHandler(myAuthenticationFailureHandler)
+                .permitAll()//返回值直接返回
+                .and()
+                //登出处理
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(myLogoutSuccessHandler)
+                .permitAll();
+            // 开启登录认证流程过滤器
+            // http.addFilterBefore(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+            
+        }        
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // 禁用 csrf, 由于使用的是JWT，我们这里不需要csrf
-        http.cors().and().csrf().disable()
-            .authorizeRequests()
-            // 跨域预检请求
-            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            // swagger
-            .antMatchers("/swagger**/**").permitAll()
-            .antMatchers("/webjars/**").permitAll()
-            .antMatchers("/v2/**").permitAll()
-            .antMatchers("/login","/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname","/api/stream/RAGFileChatStreamNoauth").permitAll()
-            // 其他所有请求需要身份认证
-            .anyRequest().authenticated()
-            .and()
-            .formLogin()
-            .usernameParameter("username")
-            .passwordParameter("password")
-            // .loginPage("/login2")
-            .loginProcessingUrl("/doLogin")
-            //成功处理
-            .successHandler(myAuthenticationSuccessHandler)
-            //失败处理
-            .failureHandler(myAuthenticationFailureHandler)
-            .permitAll()//返回值直接返回
-            .and()
-            //登出处理
-            .logout()
-            .logoutUrl("/logout")
-            .logoutSuccessHandler(myLogoutSuccessHandler)
-            .permitAll();
-        // 开启登录认证流程过滤器
-        // http.addFilterBefore(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(verificationCodeFilter, UsernamePasswordAuthenticationFilter.class);
-        // 访问控制时登录状态检查过滤器
-        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
-    }
+    @Configuration
+    @Order(2)
+    public class TokenSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
+        @Autowired
+        private UserService userService;
+
+        // private UserService userService;
+        @Override
+        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+            // 使用自定义登录身份认证组件
+            auth.authenticationProvider(new JwtAuthenticationProvider(userService));
+        }
+        @Override
+        public AuthenticationManager authenticationManager() throws Exception {
+            return super.authenticationManager();
+        }
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            // 访问控制时登录状态检查过滤器
+            http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+            // 禁用 csrf, 由于使用的是JWT，我们这里不需要csrf
+            http.cors().and().csrf().disable()
+                .authorizeRequests()
+                // 跨域预检请求
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // swagger
+                .antMatchers("/swagger**/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/**").permitAll()
+                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername","/user/checkNickname","/api/stream/RAGFileChatStreamNoauth").permitAll()
+                // 其他所有请求需要身份认证
+                .anyRequest().authenticated();
+            // 开启登录认证流程过滤器
+            // http.addFilterBefore(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+            
+        }
     }
-    
 }

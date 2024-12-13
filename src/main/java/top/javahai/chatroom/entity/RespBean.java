@@ -6,7 +6,7 @@ package top.javahai.chatroom.entity;
 public class RespBean {
   private Integer status;//状态码
   private String msg;//返回消息
-  private Object obj;//返回实体
+  private Object data;//返回实体
   private String token;//返回Token
   public static RespBean build(){
     return new RespBean();
@@ -15,25 +15,25 @@ public class RespBean {
   public static RespBean ok(String msg){
     return new RespBean(200,msg,null);
   }
-  public static RespBean ok(String msg,Object obj){
-    return new RespBean(200,msg,obj);
+  public static RespBean ok(String msg,Object data){
+    return new RespBean(200,msg,data);
   }
 
   public static RespBean error(String msg){
     return new RespBean(500,msg,null);
   }
-  public static RespBean error(String msg,Object obj){
-    return new RespBean(500,msg,obj);
+  public static RespBean error(String msg,Object data){
+    return new RespBean(500,msg,data);
   }
 
   private RespBean(){
 
   }
 
-  private RespBean(Integer status, String msg, Object obj) {
+  private RespBean(Integer status, String msg, Object data) {
     this.status = status;
     this.msg = msg;
-    this.obj = obj;
+    this.data = data;
   }
 
   public Integer getStatus() {
@@ -55,11 +55,11 @@ public class RespBean {
   }
 
   public Object getObj() {
-    return obj;
+    return data;
   }
 
-  public RespBean setObj(Object obj) {
-    this.obj = obj;
+  public RespBean setObj(Object data) {
+    this.data = data;
     return this;
   }
 

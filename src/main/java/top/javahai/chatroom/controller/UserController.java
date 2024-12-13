@@ -2,6 +2,7 @@ package top.javahai.chatroom.controller;
 
 import javax.annotation.Resource;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +42,18 @@ public class UserController {
             return RespBean.error("注册失败！");
         }
     }
-
+    /**
+     * 获取用户信息
+     * @param username
+     * @return
+     */
+    @GetMapping("/getUserInfo")
+    public RespBean getUserInfo(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        user.setId(null);
+        user.setPassword(null);
+        return RespBean.ok("获取用户信息成功", user);
+    }
     /**
      * 注册操作，检查用户名是否已被注册
      * @param username

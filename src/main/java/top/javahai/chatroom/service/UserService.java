@@ -7,12 +7,23 @@ import top.javahai.chatroom.entity.User;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 /**
  * (User)表服务接口
  *
  */
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
+
+    
+    /**
+     * 根据用户名获取用户
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
+    public User loadUserByUsername(String username) throws UsernameNotFoundException;
 
     /**
      * 获取除了当前登录用户的所有user表的数据

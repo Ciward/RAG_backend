@@ -46,7 +46,7 @@ public class JwtTokenUtils implements Serializable {
     /**
      * 有效期12小时
      */
-    private static final long EXPIRE_TIME = 12 * 60 * 60 * 1000;
+    private static final long EXPIRE_TIME = 2 * 60 * 60 * 1000;
 
     /**
 	 * 生成令牌
@@ -214,4 +214,12 @@ public class JwtTokenUtils implements Serializable {
         return token;
     }
 
+	/**
+	 * 手动使令牌失效
+	 */
+	public static void invalidateToken(String token) {
+		Claims claims = getClaimsFromToken(token);
+		claims.setExpiration(new Date());
+		generateToken(claims);
+	}
 }

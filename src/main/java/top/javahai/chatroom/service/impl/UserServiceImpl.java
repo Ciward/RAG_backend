@@ -28,11 +28,10 @@ import java.util.stream.Collectors;
  * (User)表服务实现类
  */
 @Service("userService")
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
     @Resource
     private UserDao userDao;
-    @Autowired
-    private UserService userService;
+
     /**
      * 根据用户名进行登录
      * @param username
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      */
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findByUsername(username);
+        User user = userDao.queryByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("该用户不存在");
         }
