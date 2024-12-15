@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserDao userDao;
 
+    @Override
+    public Integer checkNickname(String nickname) {
+        return 0;
+    }
+
     /**
      * 根据用户名进行登录
      * @param username
@@ -161,11 +166,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Integer checkUsername(String username) {
         return userDao.checkUsername(username);
-    }
-
-    @Override
-    public Integer checkNickname(String nickname) {
-        return userDao.checkNickname(nickname);
     }
 
     @Override

@@ -37,10 +37,7 @@ public class User implements UserDetails {
      * 用户角色
      */
     private String username;
-    /**
-     * 昵称
-     */
-    private String nickname;
+
     /**
      * 密码
      */
@@ -116,14 +113,6 @@ public class User implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     /**
@@ -213,7 +202,6 @@ public class User implements UserDetails {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", userProfile='" + userProfile + '\'' +
                 ", userStateId=" + userStateId +

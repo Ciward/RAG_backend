@@ -19,10 +19,6 @@ public class Admin implements Serializable, UserDetails {
     */
     private String username;
     /**
-    * 昵称
-    */
-    private String nickname;
-    /**
     * 密码
     */
     private String password;
@@ -66,14 +62,6 @@ public class Admin implements Serializable, UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     @Override

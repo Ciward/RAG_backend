@@ -87,8 +87,6 @@ public interface UserDao {
 
     Integer checkUsername(String username);
 
-    Integer checkNickname(String nickname);
-
     List<User> getAllUserByPage(@Param("page") Integer page, @Param("size") Integer size,String keyword,Integer isLocked);
 
     Long getTotal(@Param("keyword") String keyword,@Param("isLocked") Integer isLocked);

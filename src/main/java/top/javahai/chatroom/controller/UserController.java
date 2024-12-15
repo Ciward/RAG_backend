@@ -64,15 +64,15 @@ public class UserController {
         return userService.checkUsername(username);
     }
 
-    /**
-     * 注册操作，检查昵称是否已被注册
-     * @param nickname
-     * @return
-     */
-    @GetMapping("/checkNickname")
-    public Integer checkNickname(@RequestParam("nickname") String nickname){
-        return userService.checkNickname(nickname);
-    }
+    // /**
+    //  * 注册操作，检查昵称是否已被注册
+    //  * @param nickname
+    //  * @return
+    //  */
+    // @GetMapping("/checkNickname")
+    // public Integer checkNickname(@RequestParam("nickname") String nickname){
+    //     return userService.checkNickname(nickname);
+    // }
 
     /**
      * 通过主键查询单条数据

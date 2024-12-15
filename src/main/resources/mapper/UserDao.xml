@@ -5,7 +5,6 @@
     <resultMap type="top.javahai.chatroom.entity.User" id="UserMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="username" column="username" jdbcType="VARCHAR"/>
-        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
         <result property="password" column="password" jdbcType="VARCHAR"/>
         <result property="userProfile" column="user_profile" jdbcType="VARCHAR"/>
         <result property="userStateId" column="user_state_id" jdbcType="INTEGER"/>
@@ -24,26 +23,26 @@
 
 <!--获取所有用户数据 -->
     <select id="getUsersWithoutCurrentUser" resultMap="UserMap" parameterType="java.lang.Integer">
-        select id, username, nickname, user_profile, user_state_id, is_enabled, is_locked from user where id!=#{id}
+        select id, username, user_profile, user_state_id, is_enabled, is_locked from user where id!=#{id}
     </select>
 
     <!--查询单个-->
     <select id="queryById" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
+          id, username, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         where id = #{id}
     </select>
     <select id="queryByUsername" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
+          id, username, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         where username = #{username}
     </select>
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
+          id, username, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         limit #{offset}, #{limit}
     </select>
@@ -51,7 +50,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="UserMap">
         select
-          id, username, nickname, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
+          id, username, password, user_profile, user_state_id, is_enabled, is_locked,role,gender,name,student_id,nation,hometown
         from chatroom.user
         <where>
             <if test="id != null">
@@ -59,9 +58,6 @@
             </if>
             <if test="username != null and username != ''">
                 and username = #{username}
-            </if>
-            <if test="nickname != null and nickname != ''">
-                and nickname = #{nickname}
             </if>
             <if test="password != null and password != ''">
                 and password = #{password}
@@ -83,8 +79,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into chatroom.user(username, nickname, password, user_profile, user_state_id, is_enabled, is_locked, gender, name, student_id, nation, hometown)
-        values (#{username}, #{nickname}, #{password}, #{userProfile}, #{userStateId}, #{isEnabled}, #{isLocked}, #{gender}, #{name}, #{studentId}, #{nation}, #{hometown})
+        insert into chatroom.user(username, password, user_profile, user_state_id, is_enabled, is_locked, gender, name, student_id, nation, hometown)
+        values (#{username}, #{password}, #{userProfile}, #{userStateId}, #{isEnabled}, #{isLocked}, #{gender}, #{name}, #{studentId}, #{nation}, #{hometown})
     </insert>
 
     <!--通过主键修改数据-->
@@ -93,9 +89,6 @@
         <set>
             <if test="username != null and username != ''">
                 username = #{username},
-            </if>
-            <if test="nickname != null and nickname != ''">
-                nickname = #{nickname},
             </if>
             <if test="password != null and password != ''">
                 password = #{password},
@@ -151,9 +144,6 @@
 <!--    按条件查询所有的用户-->
     <select id="getAllUserByPage" resultMap="UserMap">
       select * from user where 1=1
-      <if test="keyword!=null and keyword!=''">
-         and nickname like concat('%',#{keyword},'%')
-      </if>
       <if test="isLocked!=null">
           and is_locked =#{isLocked}
       </if>
@@ -163,9 +153,6 @@
     </select>
     <select id="getTotal" resultType="java.lang.Long">
         select count(*) from user where 1=1
-        <if test="keyword!=null and keyword!=''">
-            and nickname like concat('%',#{keyword},'%')
-        </if>
         <if test="isLocked!=null">
             and is_locked =#{isLocked}
         </if>
