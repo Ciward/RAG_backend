@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 
 import top.javahai.chatroom.dao.AnswerDao;
@@ -33,7 +33,7 @@ public class QAController {
      * @param questionId
      * @param answer
      */
-    @RequestMapping("/answerQuestion")
+    @PostMapping("/answerQuestion")
     public RespBean answerQuestion(Authentication authentication, Integer questionId, String answerStr){
       User user = ((User) authentication.getPrincipal());
       Answer answer = new Answer();
@@ -54,7 +54,7 @@ public class QAController {
      * @param answerId
      * @param valid
      */
-    @RequestMapping("/checkAnswer")
+    @PostMapping("/checkAnswer")
     public RespBean checkAnswer(Authentication authentication, Integer answerId, int valid){
         User user = ((User) authentication.getPrincipal());
         if(user.getRole().equals("admin")){
@@ -103,7 +103,7 @@ public class QAController {
     //   ]
     // }
 
-    @RequestMapping("/getQuestionsByPage")
+    @PostMapping("/getQuestionsByPage")
     public RespPageBean getQuestionsByPage(
         @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "10") Integer size) {
@@ -123,7 +123,7 @@ public class QAController {
      * @param questionId
      * @return
      */
-    @RequestMapping("/getAnswersByQuestionId")
+    @PostMapping("/getAnswersByQuestionId")
     public RespPageBean getAnswersByQuestionId(Integer questionId){
       List<Answer> answers = answerDao.queryByQuestionId(questionId);
       RespPageBean respPageBean = new RespPageBean();
@@ -133,4 +133,19 @@ public class QAController {
       return respPageBean;
     }
 
+    /*
+     * 添加问题
+     */
+    @PostMapping("/addQuestion")
+    public RespBean addQuestion(Authentication authentication, String content){
+      User user = ((User) authentication.getPrincipal());
+      Question question = new Question();
+      question.setContent(content);
+      question.setUserId(user.getId());
+      if(questionDao.insert(question)>=1){
+        return RespBean.ok("添加问题成功！");
+      }else{
+        return RespBean.error("添加问题失败！");
+      }
+    }
 }
