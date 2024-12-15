@@ -126,21 +126,7 @@ public class WebSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             // 访问控制时登录状态检查过滤器
-            http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
-            // 禁用 csrf, 由于使用的是JWT，我们这里不需要csrf
-            http.cors().and().csrf().disable()
-                .authorizeRequests()
-                // 跨域预检请求
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // swagger
-                .antMatchers("/swagger**/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/v2/**").permitAll()
-                .antMatchers("/verifyCode","/file","/ossFileUpload","/user/register","/user/checkUsername").permitAll()
-                // 其他所有请求需要身份认证
-                .anyRequest().authenticated();
-            // 开启登录认证流程过滤器
-            // http.addFilterBefore(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
+            http.addFilter(new JwtAuthenticationFilter(authenticationManager()));
             
         }
     }

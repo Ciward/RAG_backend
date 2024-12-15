@@ -148,4 +148,17 @@ public class QAController {
         return RespBean.error("添加问题失败！");
       }
     }
+    /*
+     * 设置问题为已解决
+     */
+    @PostMapping("/setQuestionSolved")
+    public RespBean setQuestionSolved(Integer questionId){
+      Question question = questionDao.queryById(questionId);
+      question.setFinished(1);
+      if(questionDao.update(question)>=1){
+        return RespBean.ok("设置问题为已解决！");
+      }else{
+        return RespBean.error("设置问题为已解决失败！");
+      }
+    }
 }
