@@ -2,22 +2,23 @@ package top.javahai.chatroom.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
-
+import java.util.Map;
+import org.springframework.web.bind.annotation.RequestBody;
 import top.javahai.chatroom.dao.AnswerDao;
 import top.javahai.chatroom.dao.QuestionDao;
 import top.javahai.chatroom.entity.Answer;
 import top.javahai.chatroom.entity.RespBean;
 import top.javahai.chatroom.entity.User;
+import top.javahai.chatroom.service.UserService;
 import top.javahai.chatroom.config.RAGConfig;
 import top.javahai.chatroom.entity.Question;
 import top.javahai.chatroom.entity.RespPageBean;
 
-@Controller
+@RestController
 @RequestMapping("/QA")
 public class QAController {
   @Autowired
@@ -26,6 +27,8 @@ public class QAController {
   private QuestionDao questionDao;
   @Autowired
   private RAGConfig ragConfig;
+  @Autowired
+  private UserService userService;
 
     /**
      * 回答了某一个问题
@@ -46,7 +49,6 @@ public class QAController {
         return RespBean.error("回答失败！");
       }
     }
-
 
     /**
      * 管理员审核回答合法性
@@ -71,7 +73,6 @@ public class QAController {
                     return RespBean.error("审核成功，但插入Q&A失败！");
                 }
             }
-            
             return RespBean.ok("审核成功！");
           }else{
             return RespBean.error("审核失败！");
@@ -80,7 +81,6 @@ public class QAController {
           return RespBean.error("您没有权限审核回答！");
         }
     }
-
     /**
      * 分页查询问题
      * @param page
@@ -104,18 +104,18 @@ public class QAController {
     // }
 
     @PostMapping("/getQuestionsByPage")
-    public RespPageBean getQuestionsByPage(
-        @RequestParam(value = "page", defaultValue = "1") Integer page,
-        @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        
-        List<Question> questions = questionDao.queryByPage(page - 1, size);
-        Long total = questionDao.getTotal();
-        
-        RespPageBean respPageBean = new RespPageBean();
-        respPageBean.setData(questions);
-        respPageBean.setTotal(total);
-        
-        return respPageBean;
+    public RespBean getQuestionsByPage(@RequestBody Map<String, String> requestBody){
+      Integer page;
+      Integer size;
+      try {
+        page = Integer.parseInt(requestBody.get("page"));
+        size = Integer.parseInt(requestBody.get("size"));
+      }catch(NumberFormatException e){
+        return RespBean.error("参数格式错误！");
+      }
+      List<Question> questions = questionDao.queryByPage((page - 1) * size, size);
+      
+      return RespBean.ok("获取问题成功！", questions);
     }
 
     /**
@@ -124,27 +124,36 @@ public class QAController {
      * @return
      */
     @PostMapping("/getAnswersByQuestionId")
-    public RespPageBean getAnswersByQuestionId(Integer questionId){
+    public RespBean getAnswersByQuestionId(@RequestBody Map<String, String> requestBody){
+      Integer questionId;
+      try {
+        questionId = Integer.parseInt(requestBody.get("questionId"));
+      }catch(NumberFormatException e){
+        return RespBean.error("参数格式错误！");
+      }
+
       List<Answer> answers = answerDao.queryByQuestionId(questionId);
-      RespPageBean respPageBean = new RespPageBean();
-      respPageBean.setData(answers);
-      respPageBean.setTotal(Long.valueOf(answers.size()));
       
-      return respPageBean;
+      return RespBean.ok("获取回答成功！", answers);
     }
 
     /*
      * 添加问题
      */
     @PostMapping("/addQuestion")
-    public RespBean addQuestion(Authentication authentication, String content){
+    public RespBean addQuestion(Authentication authentication, @RequestBody Map<String, String> requestBody){
+      String content = requestBody.get("content");
+      if (content == null || content.isEmpty()) {
+        return RespBean.error("内容不能为空！");
+      }
       User user = ((User) authentication.getPrincipal());
+      User realUser = userService.loadUserByUsername(user.getUsername());
       Question question = new Question();
       question.setContent(content);
-      question.setUserId(user.getId());
-      if(questionDao.insert(question)>=1){
+      question.setUserId(realUser.getId());
+      if(questionDao.insert(question) >= 1){
         return RespBean.ok("添加问题成功！");
-      }else{
+      } else {
         return RespBean.error("添加问题失败！");
       }
     }
@@ -152,13 +161,19 @@ public class QAController {
      * 设置问题为已解决
      */
     @PostMapping("/setQuestionSolved")
-    public RespBean setQuestionSolved(Integer questionId){
+    public RespBean setQuestionSolved(@RequestBody Map<String, String> requestBody){
+      Integer questionId;
+      try {
+        questionId = Integer.parseInt(requestBody.get("questionId"));
+      }catch(NumberFormatException e){
+        return RespBean.error("参数格式错误！");
+      }
       Question question = questionDao.queryById(questionId);
       question.setFinished(1);
       if(questionDao.update(question)>=1){
-        return RespBean.ok("设置问题为已解决！");
-      }else{
-        return RespBean.error("设置问题为已解决失败！");
-      }
+          return RespBean.ok("设置问题为已解决！");
+        }else{
+          return RespBean.error("设置问题为已解决失败！");
+        }
     }
 }

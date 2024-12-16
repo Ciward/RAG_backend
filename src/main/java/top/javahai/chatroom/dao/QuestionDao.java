@@ -66,7 +66,7 @@ public interface QuestionDao {
      * @param size 每页大小
      * @return 对象列表
      */
-    List<Question> queryByPage(@Param("page") int page, @Param("size") int size);
+    List<Question> queryByPage(@Param("offset") int offset, @Param("size") int size);
 
     /**
      * 获取问题总数

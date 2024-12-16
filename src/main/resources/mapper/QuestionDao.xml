@@ -40,7 +40,7 @@
     <!-- 新增数据 -->
     <insert id="insert" parameterType="top.javahai.chatroom.entity.Question" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO question (content, user_id, create_time)
-        VALUES (#{content}, #{userId}, #{createTime})
+        VALUES (#{content}, #{userId}, NOW())
     </insert>
 
     <!-- 修改数据 -->
@@ -72,30 +72,30 @@
 
     <!-- 分页查询并排序 -->
     <select id="queryByPage" resultType="top.javahai.chatroom.entity.Question">
-         WITH T AS (
+        WITH T AS (
             SELECT 
-                    question_id, 
-                    COUNT(id) AS answerCount
+                question_id, 
+                COUNT(id) AS answerCount
             FROM 
-                    answer
+                answer
             GROUP BY 
-                    question_id
-		)
-		SELECT 
-				q.id, 
-				q.content, 
-				q.user_id AS userId, 
-				q.create_time AS createTime
-		FROM 
-				question q
-		LEFT JOIN 
-				T  ON q.id = T.question_id
-		GROUP BY 
-				q.id, q.content, q.user_id, q.create_time
-		ORDER BY 
-				T.answerCount ASC,
-				q.create_time DESC
-        LIMIT #{size} OFFSET #{page*size}
+                question_id
+        )
+        SELECT 
+            q.id, 
+            q.content, 
+            q.user_id AS userId, 
+            q.create_time AS createTime
+        FROM 
+            question q
+        LEFT JOIN 
+            T ON q.id = T.question_id
+        GROUP BY 
+            q.id, q.content, q.user_id, q.create_time
+        ORDER BY 
+            T.answerCount ASC,
+            q.create_time DESC
+        LIMIT #{size} OFFSET #{offset}
     </select>
 
 </mapper>

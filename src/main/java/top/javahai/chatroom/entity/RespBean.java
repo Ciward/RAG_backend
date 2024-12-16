@@ -26,7 +26,7 @@ public class RespBean {
     return new RespBean(500,msg,data);
   }
 
-  private RespBean(){
+  public RespBean(){
 
   }
 
