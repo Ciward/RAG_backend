@@ -37,12 +37,13 @@ public class QAController {
      * @param answer
      */
     @PostMapping("/answerQuestion")
-    public RespBean answerQuestion(Authentication authentication, Integer questionId, String answerStr){
+    public RespBean answerQuestion(Authentication authentication, @RequestBody Map<String, String> requestBody){
       User user = ((User) authentication.getPrincipal());
+      User realUser = userService.loadUserByUsername(user.getUsername());
       Answer answer = new Answer();
-      answer.setQuestionId(questionId);
-      answer.setContent(answerStr);
-      answer.setUserId(user.getId());
+      answer.setQuestionId(Integer.parseInt(requestBody.get("questionId")));
+      answer.setContent(requestBody.get("answerStr"));
+      answer.setUserId(realUser.getId());
       if(answerDao.insert(answer)>=1){
         return RespBean.ok("回答成功！");
       }else{
@@ -57,10 +58,19 @@ public class QAController {
      * @param valid
      */
     @PostMapping("/checkAnswer")
-    public RespBean checkAnswer(Authentication authentication, Integer answerId, int valid){
-        User user = ((User) authentication.getPrincipal());
-        if(user.getRole().equals("admin")){
-          if(answerDao.updateValid(answerId, valid, user.getId())>=1){
+    public RespBean checkAnswer(Authentication authentication, @RequestBody Map<String, String> requestBody){
+      Integer answerId;
+      Integer valid;
+      try {
+        answerId = Integer.parseInt(requestBody.get("answerId"));
+        valid = Integer.parseInt(requestBody.get("valid"));
+      }catch(NumberFormatException e){
+        return RespBean.error("参数格式错误！");
+      }
+      User user = ((User) authentication.getPrincipal());
+      User realUser = userService.loadUserByUsername(user.getUsername());
+      if(realUser.getRole().equals("admin")){
+        if(answerDao.updateValid(answerId, valid, realUser.getId())>=1){
             // 获取问题和回答内容
             Answer answer = answerDao.queryById(answerId);
             String questionContent = questionDao.queryById(answer.getQuestionId()).getContent();
@@ -131,7 +141,6 @@ public class QAController {
       }catch(NumberFormatException e){
         return RespBean.error("参数格式错误！");
       }
-
       List<Answer> answers = answerDao.queryByQuestionId(questionId);
       
       return RespBean.ok("获取回答成功！", answers);
@@ -160,16 +169,18 @@ public class QAController {
     /*
      * 设置问题为已解决
      */
-    @PostMapping("/setQuestionSolved")
-    public RespBean setQuestionSolved(@RequestBody Map<String, String> requestBody){
+    @PostMapping("/setQuestionFinished")
+    public RespBean setQuestionFinished(@RequestBody Map<String, String> requestBody){
       Integer questionId;
+      Boolean finished;
       try {
         questionId = Integer.parseInt(requestBody.get("questionId"));
+        finished = Boolean.parseBoolean(requestBody.get("finished"));
       }catch(NumberFormatException e){
         return RespBean.error("参数格式错误！");
       }
       Question question = questionDao.queryById(questionId);
-      question.setFinished(1);
+      question.setFinished(finished ? 1 : 0);
       if(questionDao.update(question)>=1){
           return RespBean.ok("设置问题为已解决！");
         }else{
