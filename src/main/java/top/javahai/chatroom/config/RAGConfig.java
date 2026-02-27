@@ -55,18 +55,18 @@ public class RAGConfig {
         requestBody.put("rerank", true);
         requestBody.put("only_need_search_results", false); // 只需要搜索结果
         requestBody.put("hybrid_search", true);
-        requestBody.put("max_token", 7114);
+        requestBody.put("max_token", 71140);
         // requestBody.put("api_base", "http://" + serverIp + ":9997/v1");
         // requestBody.put("api_key", "EMPTY"); // 替换为实际的API密钥
         // requestBody.put("model", "custom-glm4-chat");
-        requestBody.put("api_base", "https://dashscope.aliyuncs.com/compatible-mode/v1");
-        requestBody.put("api_key", "sk-847209e141f94567a1ced8670e82aed2"); // 替换为实际的API密钥
-        requestBody.put("model", "qwen-turbo");
-        requestBody.put("api_context_length", 72704);
+        requestBody.put("api_base", "http://10.102.33.130:3001/v1");
+        requestBody.put("api_key", "ssxssx123"); // 替换为实际的API密钥
+        requestBody.put("model", "gpt-oss");
+        requestBody.put("api_context_length", 130000);
         requestBody.put("chunk_size", 3000);
         requestBody.put("top_p", 0.9);
         requestBody.put("top_k", 40);
-        requestBody.put("temperature", 0.7);
+        requestBody.put("temperature", 1.0);
 
         String outputStr = JSON.toJSONString(requestBody);
 
