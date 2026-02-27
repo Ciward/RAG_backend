@@ -1,24 +1,43 @@
 package top.javahai.chatroom.entity;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 import java.util.Collection;
+import java.util.Collections;
+
+
 
 /**
  * (User)实体类
  */
+
 public class User implements UserDetails {
 
+    // public User(String username, String password, Collection<? extends GrantedAuthority> authorities){
+    //     this.username=username;
+    //     this.password=password;
+
+    // }
+    // public User(JwtUserDetails jwtUserDetails){
+    //     this.username=jwtUserDetails.getUsername();
+    //     this.password=jwtUserDetails.getPassword();
+    // }
+    /**
+     * 用户id
+     */
     private Integer id;
     /**
      * 登录账号
      */
-    private String username;
+    private String role="user";
     /**
-     * 昵称
+     * 用户角色
      */
-    private String nickname;
+    private String username;
+
     /**
      * 密码
      */
@@ -58,6 +77,10 @@ public class User implements UserDetails {
         return id;
     }
 
+    public String getRole() {
+        return role;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -92,21 +115,13 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     /**
      * 获取用户拥有的所有角色
      * @return
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     public String getPassword() {
@@ -187,7 +202,6 @@ public class User implements UserDetails {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", userProfile='" + userProfile + '\'' +
                 ", userStateId=" + userStateId +

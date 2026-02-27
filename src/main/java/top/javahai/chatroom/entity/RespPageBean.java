@@ -1,12 +1,15 @@
 package top.javahai.chatroom.entity;
 
 import java.util.List;
-
 /**
  */
-public class RespPageBean {
+public class RespPageBean extends RespBean {
   private Long total;//数据总数
   private List<?> data;//数据实体列表
+
+  public RespPageBean() {
+    super();
+  }
 
   public Long getTotal() {
     return total;

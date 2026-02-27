@@ -18,7 +18,6 @@ public interface UserDao {
      */
     User loadUserByUsername(String username);
 
-
     /**
      * 获取除当前用户的所有用户
      * @param id
@@ -35,6 +34,13 @@ public interface UserDao {
     User queryById(Integer id);
 
     /**
+     * 通过用户名查询单条数据
+     * @param username
+     * @return
+     */
+    User queryByUsername(String username);
+
+    /**
      * 查询指定行数据
      *
      * @param offset 查询起始位置
@@ -42,7 +48,6 @@ public interface UserDao {
      * @return 对象列表
      */
     List<User> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
-
 
     /**
      * 通过实体作为筛选条件查询
@@ -81,8 +86,6 @@ public interface UserDao {
     void setUserStateToLeave(Integer id);
 
     Integer checkUsername(String username);
-
-    Integer checkNickname(String nickname);
 
     List<User> getAllUserByPage(@Param("page") Integer page, @Param("size") Integer size,String keyword,Integer isLocked);
 

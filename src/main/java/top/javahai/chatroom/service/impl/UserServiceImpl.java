@@ -1,6 +1,7 @@
 package top.javahai.chatroom.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,20 +12,30 @@ import top.javahai.chatroom.dao.UserDao;
 import top.javahai.chatroom.entity.RespBean;
 import top.javahai.chatroom.entity.RespPageBean;
 import top.javahai.chatroom.entity.User;
+import top.javahai.chatroom.security.GrantedAuthorityImpl;
 import top.javahai.chatroom.service.UserService;
 import org.springframework.stereotype.Service;
 import top.javahai.chatroom.utils.UserUtil;
 
 import javax.annotation.Resource;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * (User)表服务实现类
  */
 @Service("userService")
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
     @Resource
     private UserDao userDao;
+
+    @Override
+    public Integer checkNickname(String nickname) {
+        return 0;
+    }
 
     /**
      * 根据用户名进行登录
@@ -33,10 +44,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      * @throws UsernameNotFoundException
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.loadUserByUsername(username);
-        if (user==null){
-            throw new UsernameNotFoundException("用户不存在");
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userDao.queryByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("该用户不存在");
         }
         return user;
     }
@@ -77,6 +88,29 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return this.userDao.queryById(id);
     }
 
+    /**
+     * 通过用户名查询单条数据
+     * @param username
+     * @return
+     */
+    @Override
+    public User findByUsername(String username) {
+        return this.userDao.queryByUsername(username);
+    }
+    /**
+     * 查找用户的菜单权限标识集合
+     * @param username
+     * @return
+     */
+    @Override
+	public Set<String> findPermissions(String username) {
+		Set<String> permissions = new HashSet<>();
+		permissions.add("sys:user:view");
+		permissions.add("sys:user:add");
+		permissions.add("sys:user:edit");
+		permissions.add("sys:user:delete");
+		return permissions;
+	}
     /**
      * 查询多条数据
      *
@@ -132,11 +166,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Integer checkUsername(String username) {
         return userDao.checkUsername(username);
-    }
-
-    @Override
-    public Integer checkNickname(String nickname) {
-        return userDao.checkNickname(nickname);
     }
 
     @Override

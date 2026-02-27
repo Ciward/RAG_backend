@@ -5,13 +5,25 @@ import top.javahai.chatroom.entity.RespPageBean;
 import top.javahai.chatroom.entity.User;
 
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 /**
  * (User)表服务接口
  *
  */
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
+
+    
+    /**
+     * 根据用户名获取用户
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
+    public User loadUserByUsername(String username) throws UsernameNotFoundException;
 
     /**
      * 获取除了当前登录用户的所有user表的数据
@@ -38,6 +50,19 @@ public interface UserService {
      * @return 实例对象
      */
     User queryById(Integer id);
+    /**
+     * 通过用户名查询单条数据
+     * @param username
+     * @return
+     */
+    User findByUsername(String username);
+
+    /**
+	 * 查找用户的菜单权限标识集合
+	 * @param userName
+	 * @return
+	 */
+	Set<String> findPermissions(String username);
 
     /**
      * 查询多条数据
@@ -46,6 +71,7 @@ public interface UserService {
      * @param limit 查询条数
      * @return 对象列表
      */
+    
     List<User> queryAllByLimit(int offset, int limit);
 
     /**
