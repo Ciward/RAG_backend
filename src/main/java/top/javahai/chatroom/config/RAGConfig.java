@@ -43,7 +43,8 @@ public class RAGConfig {
         requestBody.put("kb_ids", Arrays.asList(
             "KB613148ff494c41d4834f13ea66e21a25_240625",
             "KBebb756d6b0a744b29c0044e3773c1aee_240625",
-            "KB5739af62043c48f8ab1a782be7a47874_240625"
+            "KB5739af62043c48f8ab1a782be7a47874_240625",
+            "KB71908604ea5546778627de248098dd5e_240625_FAQ"
         )); // 替换为实际的知识库ID
         requestBody.put("question", content);
         requestBody.put("user_id", "zzp");
